@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<title>Chic by Val — Considered clothing, made to last</title>
+<meta name="description" content="Hand-picked, well-made clothing for everyday wear. Shop new arrivals at Chic by Val.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="images/logo.svg" alt="Chic by Val" class="logo-img"></a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="cart.html" class="nav-icon-link">Bag <span class="cart-count">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="wrap" style="display:grid; grid-template-columns:1.1fr .9fr; gap:50px; align-items:center;">
+      <div class="hero-copy">
+        <span class="eyebrow">New season, thoughtfully made</span>
+        <h1>Clothing you'll<br>reach for on repeat.</h1>
+        <p class="lead">A small, hand-picked collection of everyday pieces — chosen for fit, fabric, and the way they wear in over time.</p>
+        <div class="hero-actions">
+          <a href="shop.html" class="btn btn-primary">Shop the collection</a>
+          <a href="about.html" class="btn btn-outline">Our story</a>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="https://placehold.co/700x900/3f4b3b/f3eee4?text=Chic+by+Val" alt="Featured look from Chic by Val">
+        <span class="tag">This week's favorite</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Just added</span>
+          <h2 class="mt-0">New arrivals</h2>
+        </div>
+        <a href="shop.html" class="btn btn-outline">View all</a>
+      </div>
+      <div id="featured-grid" class="product-grid">
+        <div class="empty-state">Loading products…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--linen-dark); padding:60px 0;">
+    <div class="wrap" style="display:grid; grid-template-columns:repeat(3,1fr); gap:30px; text-align:center;">
+      <div>
+        <h3>Free exchanges</h3>
+        <p>Wrong fit? Exchange within 14 days, no questions asked.</p>
+      </div>
+      <div>
+        <h3>Secure checkout</h3>
+        <p>Every order is processed securely through Stripe.</p>
+      </div>
+      <div>
+        <h3>Hand-picked</h3>
+        <p>Every piece is chosen personally — nothing mass-produced.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <a href="index.html" class="logo"><img src="images/logo.svg" alt="Chic by Val" class="logo-img"></a>
+      <p style="margin-top:14px;">Considered, everyday clothing — hand-picked and shipped with care.</p>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="shop.html">All products</a></li>
+        <li><a href="cart.html">Your bag</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Help</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="admin/login.html">Admin login</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© <span class="js-year"></span> Chic by Val. All rights reserved.</span>
+    <span>Built with care.</span>
+  </div>
+</footer>
+
+<!-- Chatbot widget -->
+<button id="vc-chat-launcher" aria-label="Open chat assistant">💬</button>
+<div id="vc-chat-window">
+  <div id="vc-chat-header">
+    <div>Ask us anything<span class="sub">Usually replies instantly</span></div>
+    <button id="vc-chat-close" aria-label="Close chat">×</button>
+  </div>
+  <div id="vc-chat-body"></div>
+  <div id="vc-quick-replies" class="vc-quick-replies"></div>
+  <form id="vc-chat-form">
+    <input id="vc-chat-input" type="text" placeholder="Type a question…" autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+<!-- Firebase (compat SDK — simplest to use with plain <script> tags) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script src="js/chatbot.js"></script>
+<script>
+  renderProductGrid("featured-grid", { limit: 6, emptyMessage: "New arrivals are on their way — check back soon!" });
+</script>
+</body>
+</html>
