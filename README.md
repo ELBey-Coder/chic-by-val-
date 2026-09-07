@@ -27,6 +27,10 @@ A responsive boutique e-commerce website built with plain HTML, CSS, and JavaScr
 4. Check Auto Confirm User, then create the account.
 5. Give the password to Valerie privately. She can sign in at /admin/login.html.
 
+### Password recovery
+
+The owner login now includes **Forgot your password?**. Supabase emails a recovery link that opens /admin/new-password.html, where Valerie can choose a new password. After deployment, add both the Vercel and Hostinger versions of that page to Supabase under Authentication > URL Configuration > Redirect URLs.
+
 The included security rules let visitors read active products while only a signed-in user can create, edit, hide, or delete products.
 
 ### 3. Connect Stripe
