@@ -1,115 +1,66 @@
-# Chic by Val — E-Commerce Site
+# Chic by Val Storefront
 
-A plain HTML/CSS/JavaScript clothing store with a self-serve admin dashboard,
-Stripe checkout, and a built-in (no-API) chat assistant.
+A responsive boutique e-commerce website built with plain HTML, CSS, and JavaScript. Supabase supplies the secure owner login, product database, and image storage. Stripe Payment Links supply hosted checkout without exposing secret keys.
 
-## What's included
+## Pages
 
-| Page | Purpose |
-|---|---|
-| `index.html` | Homepage — hero + featured new arrivals |
-| `shop.html` | Full product grid with category filter |
-| `product.html?id=...` | Single product detail page |
-| `cart.html` | Shopping bag + Stripe checkout links |
-| `about.html`, `contact.html` | Store info + contact form |
-| `admin/login.html` | Admin sign-in |
-| `admin/dashboard.html` | Product list — edit or delete any product |
-| `admin/add-edit-product.html` | Add a new product, or edit one (`?id=...`) |
+- Home, Shop, Product, Shopping Bag
+- Our Story, FAQ, Contact
+- Private Owner Login, Product Dashboard, Add/Edit Product
+- Built-in rule-based Style Assistant on customer pages (no AI API or fee)
 
-Every page includes the chat assistant (bottom-right bubble). It's rule-based
-JavaScript — see `js/chatbot.js` — no external API, no monthly cost, works
-offline once the page is loaded.
+## One-time launch setup
 
-## Why Firebase is in here
+### 1. Connect Supabase
 
-Valerine needs to upload products from her own computer and have every
-shopper, on any device, see them immediately. Plain JavaScript alone can't
-do that — a file saved in one browser (`localStorage`) never reaches anyone
-else's browser. Firebase is Google's free backend service: it stores the
-product data (Firestore), stores the photos (Storage), and handles the
-admin login (Authentication) — all called directly from these HTML/JS files.
-There is no server to set up or maintain, and the free tier covers a
-boutique store's traffic comfortably.
+1. Create a free project at https://supabase.com/dashboard.
+2. Open SQL Editor, paste all of supabase/schema.sql, then click Run.
+3. Open Project Settings > API.
+4. Copy the Project URL and anon/public key into js/supabase-config.js.
+5. Never put the service-role key in this website.
 
-**Setup is fully documented inside `js/firebase-config.js`.** In short:
-1. Create a free project at https://console.firebase.google.com
-2. Register a "Web app" and copy the config values into `js/firebase-config.js`
-3. Enable Email/Password Authentication, create Valerine's admin login
-4. Enable Firestore Database and Storage
-5. Paste in the security rules included in that file's comments
+### 2. Create Valerie's owner account
 
-## Setting up Stripe checkout
+1. In Supabase, open Authentication > Users.
+2. Click Add user > Create new user.
+3. Enter achuval@yahoo.com and a strong temporary password.
+4. Check Auto Confirm User, then create the account.
+5. Give the password to Valerie privately. She can sign in at /admin/login.html.
 
-This site uses **Stripe Payment Links** — no backend code required:
-1. Create a free Stripe account at https://stripe.com
-2. For each product, go to Stripe Dashboard → Payment Links → create one
-   matching that product's price
-3. Paste the generated link into the "Stripe payment link" field when adding
-   or editing that product in the admin dashboard
-4. Shoppers click "Buy now" / "Buy this item" and pay directly on Stripe's
-   secure hosted page — card data never touches this site
+The included security rules let visitors read active products while only a signed-in user can create, edit, hide, or delete products.
 
-This keeps things simple and secure for launch. Down the road, a small
-serverless function (e.g. a single Firebase Cloud Function) can combine an
-entire cart into one Stripe Checkout session if Valerine wants true
-multi-item checkout — flagged here as a natural v2 upgrade, not needed to
-launch.
+### 3. Connect Stripe
 
-## Deploying the site
+1. Create or open the Stripe account.
+2. In Stripe, open Payment Links and create a link for each item.
+3. Valerie pastes that link into the Stripe Payment Link field while adding or editing the matching product.
+4. Test each link in Stripe test mode before switching it live.
 
-**Recommended: Vercel.** This is a plain static site (no build step), so
-Vercel serves it as-is with zero configuration:
+This basic version sends each item to its own secure Stripe checkout. A future version can add a server-side combined-cart checkout and inventory synchronization.
 
-- **From the terminal:** `cd` into this folder and run `npx vercel`, then
-  follow the prompts. Leave the build command and output directory blank —
-  there's nothing to build.
-- **From GitHub:** push this folder to a repo, then in the Vercel dashboard
-  click "Add New" → "Project" → import that repo. Framework preset: "Other".
-  Build command / output directory: leave blank.
+## Owner workflow
 
-Either way you get a live URL immediately (e.g. `your-project.vercel.app`),
-and a custom domain can be added afterward under the project's Domains
-settings.
+1. Sign in at admin/login.html.
+2. Select Add product.
+3. Upload a JPG, PNG, or WebP image under 5 MB.
+4. Enter name, category, price, sizes, material, description, and Stripe link.
+5. Choose whether it is visible and featured, then publish.
+6. Use Edit or Delete on the dashboard whenever details change.
 
-Firebase and Stripe work exactly the same on Vercel as anywhere else —
-they're called directly from the browser (via `firebase-config.js` and the
-Stripe payment links), so hosting choice doesn't affect them at all.
+## Run in VS Code
 
-Other free options that work just as well if preferred: **Firebase Hosting**
-(`npm install -g firebase-tools`, then `firebase login`, `firebase init
-hosting`, `firebase deploy`) or **GitHub Pages** (push to a repo, enable
-Pages in repo settings, point at the root folder).
+This is a static site, not an npm project. Do not use npm run dev.
 
-## Editing products
+1. Open this exact project folder in VS Code.
+2. Install the Live Server extension.
+3. Right-click index.html and choose Open with Live Server.
 
-Valerine never needs to touch code. From `admin/dashboard.html` she can:
-- **Add** a product — photo, name, category, price, size, material,
-  description, and Stripe link
-- **Edit** any product — click "Edit" in the table, change any field, save
-- **Delete** a product — click "Delete" (asks for confirmation first)
+Opening the folder itself in VS Code avoids the file-does-not-reside-within-a-trusted-folder error. If asked, choose Trust the authors of all files in this folder.
 
-Changes appear on the live site within a second or two, for every visitor.
+## Before launch
 
-## Folder structure
-
-```
-ecommerce-site/
-├── index.html, shop.html, product.html, cart.html, about.html, contact.html
-├── css/
-│   ├── style.css      — site-wide design system
-│   ├── chatbot.css     — chat widget styling
-│   └── admin.css       — admin dashboard styling
-├── js/
-│   ├── firebase-config.js  — Firebase setup (paste your keys here)
-│   ├── products.js         — shared product fetch/render logic
-│   ├── cart.js             — shopping bag logic (localStorage)
-│   ├── chatbot.js          — rule-based chat assistant
-│   └── main.js             — nav toggle, small helpers
-└── admin/
-    ├── login.html
-    ├── dashboard.html
-    ├── add-edit-product.html
-    └── js/
-        ├── admin-auth.js       — login guard for admin pages
-        └── admin-products.js   — add/edit/delete logic
-```
+- Replace demo product content by connecting Supabase and adding Valerie's real products.
+- Confirm the final shipping, pickup, and exchange policies with Valerie.
+- Test admin sign-in, image upload, editing, hiding, deletion, and every Stripe link.
+- Add the live domain to Supabase Authentication > URL Configuration > Redirect URLs.
+- Keep Valerie's password and Stripe login private.

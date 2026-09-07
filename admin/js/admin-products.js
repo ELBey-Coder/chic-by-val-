@@ -1,0 +1,9 @@
+async function adminProducts(){
+  const {data,error}=await storeDB.from("products").select("*").order("created_at",{ascending:false});if(error)throw error;return data||[];
+}
+async function renderAdminTable(){
+ const body=document.getElementById("product-table-body");try{const items=await adminProducts();document.getElementById("stat-total-products").textContent=items.length;body.innerHTML=items.length?items.map(p=>'<tr><td><img src="'+escapeHTML(p.image_url||"../images/chic-by-val-hero.png")+'" alt=""></td><td><b>'+escapeHTML(p.name)+'</b></td><td>'+escapeHTML(p.category||"—")+'</td><td>'+formatPrice(p.price)+'</td><td><span class="status-pill">'+(p.active?"Live":"Hidden")+'</span></td><td><div class="row-actions"><a href="add-edit-product.html?id='+p.id+'">Edit</a><button class="del" onclick="deleteProduct(\''+p.id+'\')">Delete</button></div></td></tr>').join(""):'<tr><td colspan="6">No products yet. Add the first one.</td></tr>'}catch(e){body.innerHTML='<tr><td colspan="6">Could not load products.</td></tr>';console.error(e)}
+}
+async function deleteProduct(id){if(!confirm("Delete this product permanently?"))return;const {error}=await storeDB.from("products").delete().eq("id",id);if(error)alert(error.message);else renderAdminTable()}
+async function uploadProductImage(file){const ext=(file.name.split(".").pop()||"jpg").toLowerCase(),path=crypto.randomUUID()+"."+ext;const {error}=await storeDB.storage.from("product-images").upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;return storeDB.storage.from("product-images").getPublicUrl(path).data.publicUrl}
+async function saveProduct(id,data){if(id){const {error}=await storeDB.from("products").update(data).eq("id",id);if(error)throw error}else{const {error}=await storeDB.from("products").insert(data);if(error)throw error}}
