@@ -1,5 +1,5 @@
 // Deploy with JWT verification disabled; this public checkout endpoint validates its own input.
-// Secrets: STRIPE_SECRET_KEY, STRIPE_SHIPPING_RATE_ID, SUPABASE_SERVICE_ROLE_KEY.
+// Secrets: STRIPE_SECRET_KEY, SUPABASE_SERVICE_ROLE_KEY. Flat US shipping: $12.95/order.
 const jsonHeaders = { "Content-Type": "application/json" };
 const allowedOrigins = new Set([
   "https://chicbyval.com", "https://www.chicbyval.com", "https://chic-by-val.vercel.app",
@@ -17,10 +17,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "content-type, apikey, authorization", Vary: "Origin" } });
   if (req.method !== "POST") return response({ error: "Method not allowed" }, 405, origin);
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-  const shippingRate = Deno.env.get("STRIPE_SHIPPING_RATE_ID");
   const dbUrl = Deno.env.get("SUPABASE_URL");
   const dbKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!stripeKey || !shippingRate || !dbUrl || !dbKey) return response({ error: "Checkout has not been configured." }, 503, origin);
+  if (!stripeKey || !dbUrl || !dbKey) return response({ error: "Checkout has not been configured." }, 503, origin);
   try {
     const { items } = await req.json();
     if (!Array.isArray(items) || items.length < 1 || items.length > 20) return response({ error: "Bag must contain 1 to 20 lines." }, 400, origin);
@@ -36,7 +35,10 @@ Deno.serve(async (req) => {
     form.set("success_url", `${origin}/cart.html?checkout=success`);
     form.set("cancel_url", `${origin}/cart.html?checkout=cancel`);
     form.set("shipping_address_collection[allowed_countries][0]", "US");
-    form.set("shipping_options[0][shipping_rate]", shippingRate);
+    form.set("shipping_options[0][shipping_rate_data][type]", "fixed_amount");
+    form.set("shipping_options[0][shipping_rate_data][display_name]", "Standard US shipping");
+    form.set("shipping_options[0][shipping_rate_data][fixed_amount][amount]", "1295");
+    form.set("shipping_options[0][shipping_rate_data][fixed_amount][currency]", "usd");
     form.set("phone_number_collection[enabled]", "true");
     form.set("metadata[source]", "chicbyval-web-bag");
     let total = 0;
