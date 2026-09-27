@@ -18,6 +18,14 @@ function productCardHTML(p){
 }
 async function renderProductGrid(id,{category=null,limit=null}={}){
   const el=document.getElementById(id);if(!el)return;
-  try{let products=await fetchAllProducts();if(category)products=products.filter(p=>(p.category||"").toLowerCase()===category.toLowerCase());if(limit)products=products.slice(0,limit);el.innerHTML=products.length?products.map(productCardHTML).join(""):'<div class="empty-state">Valerie is preparing new pieces. Please check back soon.</div>'}
+  try{let products=await fetchAllProducts();if(category)products=products.filter(p=>(p.category||"").toLowerCase()===category.toLowerCase());if(limit)products=products.slice(0,limit);el.innerHTML=products.length?products.map(productCardHTML).join(""):'<div class="empty-state">Val is preparing new pieces. Please check back soon.</div>'}
   catch(e){console.error(e);el.innerHTML='<div class="empty-state">The collection could not load. Please refresh the page.</div>'}
+}
+
+function variants(value){return String(value||"").split(",").map(x=>x.trim()).filter(Boolean)}
+async function setupShopFilters(initial){
+ const category=document.getElementById("category-filter"),size=document.getElementById("size-filter"),color=document.getElementById("color-filter"),grid=document.getElementById("shop-grid");category.value=initial;
+ try{const products=await fetchAllProducts();for(const [el,key] of [[size,"sizes"],[color,"colors"]]){const choices=[...new Set(products.flatMap(p=>variants(p[key])))].sort();choices.forEach(v=>{const option=document.createElement("option");option.value=v;option.textContent=v;el.appendChild(option)})}
+ const draw=()=>{const filtered=products.filter(p=>(!category.value||p.category===category.value)&&(!size.value||variants(p.sizes).includes(size.value))&&(!color.value||variants(p.colors).includes(color.value)));grid.innerHTML=filtered.length?filtered.map(productCardHTML).join(""):'<div class="empty-state">No items match these filters.</div>'};[category,size,color].forEach(el=>el.addEventListener("change",draw));draw()}
+ catch(e){console.error(e);grid.innerHTML='<div class="empty-state">The collection could not load. Please refresh the page.</div>'}
 }
