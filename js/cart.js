@@ -6,8 +6,16 @@ function addToCart(id,qty=1,size="",color=""){const cart=getCart(),line=cart.fin
 function removeFromCart(id,size="",color=""){saveCart(getCart().filter(x=>!(x.id===id&&(x.size||"")===size&&(x.color||"")===color)));renderCartPage()}
 async function renderCartPage(){
  const lines=document.getElementById("cart-lines"),actions=document.getElementById("checkout-actions");if(!lines)return;
- const status=new URLSearchParams(location.search).get("checkout");
- if(status==="success"){saveCart([]);history.replaceState(null,"",location.pathname);const notice=document.createElement("p");notice.className="form-hint";notice.textContent="Thank you. Stripe will email your receipt. Keep that receipt for your records.";lines.before(notice)}
+ const params=new URLSearchParams(location.search),status=params.get("checkout");
+ if(status==="success"){
+  const notice=document.createElement("p");notice.className="form-hint";lines.before(notice);
+  try{
+   const result=await verifyCheckout(params.get("session_id")||"");
+   if(result.paid){if(result.flow==="bag")saveCart([]);notice.textContent="Payment confirmed. Thank you for your order. Keep your Stripe receipt for your records."}
+   else notice.textContent="Payment has not been confirmed yet. Check your Stripe receipt or contact the store before trying again.";
+  }catch(e){notice.textContent="We could not confirm the payment. Check your Stripe receipt or contact the store before trying again."}
+  history.replaceState(null,"",location.pathname);
+ }
  if(status==="cancel"){history.replaceState(null,"",location.pathname)}
  const cart=getCart();if(!cart.length){document.getElementById("shipping-row").hidden=true;lines.innerHTML='<div class="empty-state">Your bag is empty. <a class="text-link" href="shop.html">Shop the collection</a></div>';actions.innerHTML="";document.getElementById("cart-subtotal").textContent="$0.00";document.getElementById("cart-total").textContent="$0.00";return}
  try{

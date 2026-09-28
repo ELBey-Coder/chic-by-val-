@@ -1,4 +1,4 @@
-async function startCheckout(items, button, message) {
+async function startCheckout(items, button, message, flow = "bag") {
   button.dataset.defaultLabel ||= button.textContent;
   button.disabled = true;
   button.textContent = "Opening secure checkout...";
@@ -6,7 +6,7 @@ async function startCheckout(items, button, message) {
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
       method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ items, flow }),
     });
     const data = await res.json();
     if (!res.ok || !/^https:\/\/checkout\.stripe\.com\//.test(data.url || "")) throw new Error(data.error || "Checkout could not start.");
@@ -16,4 +16,12 @@ async function startCheckout(items, button, message) {
     button.disabled = false;
     button.textContent = button.dataset.defaultLabel || "Checkout entire bag";
   }
+}
+
+async function verifyCheckout(sessionId) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout?session_id=${encodeURIComponent(sessionId)}`, {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+  });
+  if (!res.ok) throw new Error("Checkout could not be verified.");
+  return res.json();
 }
