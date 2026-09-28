@@ -3,6 +3,7 @@
 const jsonHeaders = { "Content-Type": "application/json" };
 const allowedOrigins = new Set([
   "https://chicbyval.com", "https://www.chicbyval.com", "https://chic-by-val.vercel.app",
+  "https://chic-by-val-git-chic-val-refresh-2026-09-27-diverseconsulting.vercel.app",
 ]);
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function response(body: unknown, status: number, origin: string) {
