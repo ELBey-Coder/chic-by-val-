@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     if (total > 2000000) return response({ error: "Bag total is too large." }, 400, origin);
     const stripe = await fetch("https://api.stripe.com/v1/checkout/sessions", { method: "POST", headers: { Authorization: `Bearer ${stripeKey}`, "Content-Type": "application/x-www-form-urlencoded" }, body: form });
     const session = await stripe.json();
-    if (!stripe.ok || !session.url) { console.error("Stripe checkout error", session.error?.type, session.error?.code, session.error?.message); return response({ error: "Checkout could not start. Please try again." }, 502, origin); }
+    if (!stripe.ok || !session.url) { console.error("Stripe checkout error", session.error?.type, session.error?.code); return response({ error: "Checkout could not start. Please try again." }, 502, origin); }
     return response({ url: session.url }, 200, origin);
   } catch (error) { console.error("Checkout error", error); return response({ error: "Checkout could not start. Please try again." }, 500, origin); }
 });
