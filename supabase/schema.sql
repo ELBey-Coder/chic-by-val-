@@ -35,3 +35,6 @@ drop policy if exists "Authenticated owner updates product images" on storage.ob
 create policy "Authenticated owner updates product images" on storage.objects for update to authenticated using (bucket_id='product-images') with check (bucket_id='product-images');
 drop policy if exists "Authenticated owner deletes product images" on storage.objects;
 create policy "Authenticated owner deletes product images" on storage.objects for delete to authenticated using (bucket_id='product-images');
+
+-- Safe for an existing catalog: run before publishing the new owner form.
+alter table public.products add column if not exists colors text;
